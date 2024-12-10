@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Predicción de Clasificación Banco Monopoly</title>
+</head>
+<body>
+    <h1>Formulario de Predicción de Clasificación</h1>
+    <form id="predictForm">
+        <textarea id="features" rows="5" required></textarea><br><br>
+        <label for="features">Características (separadas por coma, espacio o tabulador):</label>
+        <br><br>
+        <button type="submit">Predecir</button>
+    </form>
+    
+
+    <div id="result">
+        <h3>Resultado:</h3>
+        <p id="prediction"></p>
+    </div>
+
+    <script>
+       document.getElementById('predictForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    // Obtener los valores del campo de texto y separarlos en un array
+    const featureText = document.getElementById('features').value.trim();
+    const features = featureText.split(/[\s,]+/).map(parseFloat);
+
+    // Validar que todos los valores sean números
+    if (features.some(isNaN)) {
+        alert('Por favor, ingresa solo números en todas las características.');
+        return;
+    }
+
+    // Enviar los datos al servidor
+    fetch('/predict', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ features: features })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('prediction').textContent = 'Predicción: ' + data.prediction;
+    })
+    .catch(error => {
+        console.error('Error al realizar la predicción:', error);
+    });
+});
+    </script>
+</body>
+</html>
